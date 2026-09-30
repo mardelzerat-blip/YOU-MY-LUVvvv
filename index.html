@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Princess Tale Special Edition 👑💖</title>
+  <style>
+    :root {
+      --p-pink: #ff477e;
+      --s-pink: #ff85a1;
+      --accent: #7209b7;
+      --gold: #f72585;
+      --bg: linear-gradient(135deg, #10002b 0%, #240046 50%, #3c096c 100%);
+      --glass: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.25);
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; user-select: none; touch-action: manipulation; }
+
+    body {
+      background: var(--bg);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .app-card {
+      width: 100vw;
+      max-width: 410px;
+      height: 100vh;
+      max-height: 750px;
+      background: rgba(20, 10, 35, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid var(--glass-border);
+      border-radius: 32px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 15px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--glass-border);
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: bold; backdrop-filter: blur(10px);
+      color: #ffe5ec;
+    }
+
+    .stage {
+      display: none; width: 100%; height: 100%;
+      flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 60px 20px 25px 20px; position: absolute; top: 0; left: 0;
+      text-align: center;
+    }
+
+    .stage.active { display: flex !important; }
+
+    h1 { font-size: 1.8rem; color: #ff85a1; text-shadow: 0 0 10px rgba(255, 133, 161, 0.5); }
+    p { font-size: 0.92rem; color: #e0aaff; line-height: 1.6; }
+
+    .btn {
+      background: linear-gradient(45deg, #f72585, #7209b7);
+      color: white; border: none; padding: 14px 32px;
+      font-size: 1rem; font-weight: bold; border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(247, 37, 133, 0.4);
+      cursor: pointer; transition: all 0.2s ease;
+      display: inline-block; text-decoration: none;
+    }
+
+    .btn:active { transform: scale(0.95); }
+
+    canvas {
+      width: 100%; max-width: 350px; height: 460px;
+      border-radius: 24px; border: 1.5px solid var(--glass-border);
+      background: rgba(0,0,0,0.2); touch-action: none;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .modal {
+      display: none; position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(10, 0, 20, 0.85);
+      backdrop-filter: blur(12px); z-index: 200;
+      flex-direction: column; justify-content: center; align-items: center;
+      padding: 25px;
+    }
+
+    .modal-card {
+      background: rgba(40, 15, 60, 0.9);
+      border: 2px solid var(--p-pink);
+      border-radius: 28px; padding: 25px; max-width: 330px;
+      text-align: center; box-shadow: 0 15px 35px rgba(247, 37, 133, 0.3);
+    }
+
+    textarea, input {
+      width: 100%; background: rgba(255,255,255,0.1);
+      border: 1px solid var(--p-pink); border-radius: 16px;
+      padding: 12px; color: #fff; text-align: center;
+      font-size: 0.95rem; outline: none; margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-card">
+  <div class="top-bar">
+    <div class="badge" id="stageBadge">👑 عالم جنى</div>
+    <div class="badge" id="scoreBadge">النقاط: 0</div>
+  </div>
+
+  <!-- Intro Stage -->
+  <div class="stage active" id="stage0">
+    <div style="margin-top: 40px;">
+      <div style="font-size: 70px; filter: drop-shadow(0 0 15px #f72585);">✨👸🏼✨</div>
+      <h1 style="margin-top: 15px;">حكاية أميرتي جنى</h1>
+      <p style="margin-top: 10px;">صممتلك العالم ده مخصوص بكل تفصيلة فيه.. ألعاب كاملة بسلاسة وجرافيكس عالي، وفي نهاية كل مرحلة رسالة خاصة من قلبي مستنياكي 💕</p>
+    </div>
+    <button class="btn" onclick="startStage(1)">ادخلي عالمك السحري 🚀</button>
+  </div>
+
+  <!-- Game Stage Container -->
+  <div class="stage" id="gameStage">
+    <canvas id="mainCanvas" width="350" height="460"></canvas>
+  </div>
+
+  <!-- Secret Stage -->
+  <div class="stage" id="stageSecret">
+    <div>
+      <div style="font-size: 55px;">🔒🔑</div>
+      <h2>القفل السرّي لخزنة الحب</h2>
+      <p style="margin-top: 8px;">ادخلي تاريخ بداية حكايتنا الحلوة مع بعض 💖</p>
+      <input type="text" id="secretKey" placeholder="التاريخ (مثال: 3/4/2026)">
+      <p id="secretErr" style="color: #ff477e; display: none; font-size: 0.85rem;">التاريخ مش مظبوط يا روحي! فكري تاني 🙈</p>
+    </div>
+    <button class="btn" onclick="checkSecretKey()">افتحي الخزنة ✨</button>
+  </div>
+
+  <!-- Final Love Message Stage -->
+  <div class="stage" id="stageFinal">
+    <div style="width: 100%;">
+      <div style="font-size: 50px;">💌👑</div>
+      <h2>رسالة من مصطفى لقلبك</h2>
+      <p style="margin: 10px 0; font-size: 0.9rem; color: #ffe5ec; max-height: 220px; overflow-y: auto; text-align: justify; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 16px;">
+        يا أجمل نعمة ربنا رزقني بيها في حياتي.. بحبك وبحب كل تفصيلة فيكي، بحب ضحكتك اللي بتنور دنيتي وبحب وجودك اللي بيديني أمان وراحة بال مش عند حد في العالم كله. الألعاب دي مجرد حاجة بسيطة تعبر عن حسك اللطيف في حياتي وابتسامتك اللي عندي بالدنيا كلها 💕
+      </p>
+      <textarea id="replyMsg" rows="3" placeholder="اكتبيلي ردك ورسالتك هنا يا روح قلبي..."></textarea>
+    </div>
+    <button class="btn" onclick="alert('خدتي لقطة الشاشة للرد؟ أبعتيهالي فوراً 📸💖')">إرسال لـ مصطفى 📸</button>
+  </div>
+
+  <!-- Love Popup Modal -->
+  <div class="modal" id="loveModal">
+    <div class="modal-card">
+      <div style="font-size: 45px;" id="mIcon">💖</div>
+      <h2 id="mTitle" style="font-size: 1.2rem; margin: 8px 0; color: #ff85a1;"></h2>
+      <p id="mText" style="font-size: 0.88rem; color: #e0aaff; margin-bottom: 15px; text-align: right; line-height: 1.5;"></p>
+      <button class="btn" onclick="closeModalAndContinue()">المرحلة التالية ✨</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentStage = 0;
+  let canvas = document.getElementById('mainCanvas');
+  let ctx = canvas.getContext('2d');
+  let animId = null;
+  let score = 0;
+
+  // Love Messages Content
+  const messages = {
+    1: { title: "أشطر كتكوتة في الكون! 🐣☁️", text: "مهما طارت الكتكوتة دي لأعلى سحاب، هي مش هتوصل لربع مكانتك العالية جوه قلبي.. بحبك اوي يا جنى ويا بختي بيكي ينور عيني 💕" },
+    2: { title: "وصلتي ليوجين بالسلامة! 💇🏼‍♀️🏰", text: "شعر روبانزل وصل الحبيب.. وزي ما يوجين اتحمل كل حاجة عشان يوصل لروبانزل، أنا هفضل جمبك ومعاكي وسند ليكي طوال العمر 💜" },
+    3: { title: "وصلت موانا لجزيرتها السحرية! ⛵🌺", text: "الأمان والسلام اللي موانا لقيته في جزيرتها، أنا بلاقيه بالظبط في حضنك ووجودك معايا.. بالهنا والشفا على قلبك حلاوة الفوز 💖" },
+    4: { title: "اكتملت مجرة الحب بلمستك! 🌌✨", text: "النجوم رسمت قلب باسمك في السماء.. أنتي النجمة اللي بتنورلي نفق عمري كله، وبحبك بكل لغات العالم 💕" }
+  };
+
+  function updateHeader(title, sc) {
+    document.getElementById('stageBadge').innerText = title;
+    document.getElementById('scoreBadge').innerText = "النقاط: " + sc;
+  }
+
+  function startStage(stg) {
+    currentStage = stg;
+    document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+    
+    if (stg <= 4) {
+      document.getElementById('gameStage').classList.add('active');
+      if (animId) cancelAnimationFrame(animId);
+      if (stg === 1) initChickGame();
+      if (stg === 2) initRapunzelGame();
+      if (stg === 3) initMoanaGame();
+      if (stg === 4) initGalaxyGame();
+    } else if (stg === 5) {
+      document.getElementById('stageSecret').classList.add('active');
+    }
+  }
+
+  function showModal(stgKey) {
+    document.getElementById('mIcon').innerText = stgKey === 1 ? '🐣' : stgKey === 2 ? '💇🏼‍♀️' : stgKey === 3 ? '🌺' : '🌌';
+    document.getElementById('mTitle').innerText = messages[stgKey].title;
+    document.getElementById('mText').innerText = messages[stgKey].text;
+    document.getElementById('loveModal').style.display = 'flex';
+  }
+
+  function closeModalAndContinue() {
+    document.getElementById('loveModal').style.display = 'none';
+    startStage(currentStage + 1);
+  }
+
+  /* -------------------------------------------------------------
+     STAGE 1: Infinite Chick Cloud Jump 🐣☁️
+  ------------------------------------------------------------- */
+  function initChickGame() {
+    updateHeader("المرحلة 1: الكتكوت السحابي 🐣", 0);
+    score = 0;
+    let chick = { x: 160, y: 200, vy: 0, radius: 18 };
+    let clouds = [];
+    let cameraY = 0;
+
+    for(let i=0; i<6; i++) {
+      clouds.push({ x: Math.random()*260, y: 400 - i*80, w: 90, h: 18 });
+    }
+
+    function handleTouch(e) {
+      let rect = canvas.getBoundingClientRect();
+      let touchX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      chick.x = touchX * (canvas.width / rect.width);
+    }
+    canvas.ontouchmove = handleTouch;
+    canvas.onmousemove = handleTouch;
+
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // Gradient Sky Background
+      let grad = ctx.createLinearGradient(0,0,0,canvas.height);
+      grad.addColorStop(0, '#2b1055'); grad.addColorStop(1, '#7597de');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Physics
+      chick.vy += 0.35;
+      chick.y += chick.vy;
+
+      if (chick.y < 200) {
+        let diff = 200 - chick.y;
+        chick.y = 200;
+        cameraY += diff;
+        score += Math.floor(diff);
+        updateHeader("المرحلة 1: الكتكوت السحابي 🐣", score);
+        clouds.forEach(c => {
+          c.y += diff;
+          if (c.y > canvas.height) {
+            c.y = -20; c.x = Math.random()*260;
+          }
+        });
+      }
+
+      // Draw Clouds & Collision
+      clouds.forEach(c => {
+        ctx.fillStyle = '#ffc8dd';
+        ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, c.h, 10); ctx.fill();
+        
+        if (chick.vy > 0 && chick.x > c.x && chick.x < c.x + c.w && chick.y + chick.radius >= c.y && chick.y + chick.radius <= c.y + 12) {
+          chick.vy = -10.5;
+        }
+      });
+
+      // Reset if fallen
+      if (chick.y > canvas.height) {
+        chick.y = 200; chick.vy = -10;
+      }
+
+      // Draw Chick
+      ctx.font = "34px sans-serif";
+      ctx.fillText("🐣", chick.x - 17, chick.y + 10);
+
+      if (score >= 1500) {
+        showModal(1); return;
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* -------------------------------------------------------------
+     STAGE 2: Rapunzel's Hair Rescue 💇🏼‍♀️🏰
+  ------------------------------------------------------------- */
+  function initRapunzelGame() {
+    updateHeader("المرحلة 2: شعر روبانزل 💇🏼‍♀️", 0);
+    score = 0;
+    let hairX = 175;
+    let eugene = { y: 400, speed: 1.2 };
+    let obstacles = [];
+
+    function handleTouch(e) {
+      let rect = canvas.getBoundingClientRect();
+      let touchX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      hairX = touchX * (canvas.width / rect.width);
+    }
+    canvas.ontouchmove = handleTouch;
+    canvas.onmousemove = handleTouch;
+
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // Night Castle BG
+      ctx.fillStyle = "#1d3557"; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Tower
+      ctx.fillStyle = "#457b9d"; ctx.fillRect(130, 0, 90, canvas.height);
+      ctx.font = "40px sans-serif"; ctx.fillText("🏰", 150, 50); ctx.fillText("👸🏼", 155, 80);
+
+      // Golden Hair
+      ctx.strokeStyle = "#ffe5ec"; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(175, 80);
+      ctx.quadraticCurveTo(hairX, (80 + eugene.y)/2, hairX, eugene.y);
+      ctx.stroke();
+
+      // Eugene Climbing
+      eugene.y -= eugene.speed;
+      ctx.fillText("🕺🏻", hairX - 18, eugene.y);
+
+      // Obstacles (Birds)
+      if (Math.random() < 0.03) {
+        obstacles.push({ x: Math.random() > 0.5 ? 0 : canvas.width, y: Math.random()*250 + 100, vx: Math.random()*2 + 1 });
+      }
+
+      for(let i=obstacles.length-1; i>=0; i--) {
+        let ob = obstacles[i];
+        ob.x += ob.vx;
+        ctx.fillText("🦅", ob.x, ob.y);
+        if (Math.abs(ob.x - hairX) < 25 && Math.abs(ob.y - eugene.y) < 25) {
+          eugene.y = Math.min(canvas.height - 40, eugene.y + 30); // Knock down
+        }
+      }
+
+      score = Math.floor((400 - eugene.y) / 3);
+      updateHeader("المرحلة 2: شعر روبانزل 💇🏼‍♀️", score);
+
+      if (eugene.y <= 90) {
+        // Happy Ending Celebration
+        ctx.fillStyle = "#ffb703";
+        ctx.font = "30px sans-serif";
+        ctx.fillText("🎆✨💖✨🎆", 100, 120);
+        setTimeout(() => showModal(2), 1000);
+        return;
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* -------------------------------------------------------------
+     STAGE 3: Moana's Island Voyage ⛵🌺
+  ------------------------------------------------------------- */
+  function initMoanaGame() {
+    updateHeader("المرحلة 3: قارب موانا ⛵", 0);
+    score = 0;
+    let boat = { x: 160, y: 380 };
+    let elements = [];
+    let progress = 0;
+
+    function handleTouch(e) {
+      let rect = canvas.getBoundingClientRect();
+      let touchX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      boat.x = touchX * (canvas.width / rect.width);
+    }
+    canvas.ontouchmove = handleTouch;
+    canvas.onmousemove = handleTouch;
+
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // Tropical Ocean BG
+      ctx.fillStyle = "#0077b6"; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      progress += 0.5;
+      score = Math.floor(progress);
+      updateHeader("المرحلة 3: قارب موانا ⛵", score);
+
+      // Te Fiti Island coming closer
+      if (progress > 200) {
+        ctx.fillStyle = "#2a9d8f";
+        ctx.beginPath(); ctx.arc(175, -100 + (progress-200), 180, 0, Math.PI*2); ctx.fill();
+        ctx.font = "40px sans-serif"; ctx.fillText("🌺🏝️🌺", 120, -20 + (progress-200));
+      }
+
+      // Obstacles & Hearts
+      if (Math.random() < 0.04 && progress < 200) {
+        elements.push({ x: Math.random()*300, y: -20, type: Math.random() > 0.3 ? '🪨' : '💚' });
+      }
+
+      for(let i=elements.length-1; i>=0; i--) {
+        let el = elements[i];
+        el.y += 3;
+        ctx.font = "26px sans-serif"; ctx.fillText(el.type, el.x, el.y);
+
+        if (Math.abs(el.x - boat.x) < 30 && Math.abs(el.y - boat.y) < 30) {
+          if (el.type === '💚') score += 50;
+          elements.splice(i, 1);
+        }
+      }
+
+      // Draw Boat
+      ctx.font = "38px sans-serif"; ctx.fillText("⛵", boat.x - 18, boat.y);
+
+      if (progress >= 320) {
+        showModal(3); return;
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* -------------------------------------------------------------
+     STAGE 4: Galaxy Love Constellation (Creative Stage) 🌌✨
+  ------------------------------------------------------------- */
+  function initGalaxyGame() {
+    updateHeader("المرحلة 4: مجرة القلوب 🌌", 100);
+    let stars = [
+      {x: 175, y: 120, connected: false},
+      {x: 100, y: 180, connected: false},
+      {x: 250, y: 180, connected: false},
+      {x: 130, y: 280, connected: false},
+      {x: 220, y: 280, connected: false},
+      {x: 175, y: 350, connected: false}
+    ];
+
+    function handleTouch(e) {
+      let rect = canvas.getBoundingClientRect();
+      let touchX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      let touchY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      let px = touchX * (canvas.width / rect.width);
+      let py = touchY * (canvas.height / rect.height);
+
+      stars.forEach(s => {
+        if (Math.hypot(s.x - px, s.y - py) < 30) {
+          s.connected = true;
+        }
+      });
+    }
+    canvas.ontouchstart = handleTouch;
+    canvas.onclick = handleTouch;
+
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // Deep Space BG
+      ctx.fillStyle = "#03071e"; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Lines between connected stars
+      ctx.strokeStyle = "#f72585"; ctx.lineWidth = 3;
+      ctx.beginPath();
+      let allDone = true;
+      stars.forEach((s, idx) => {
+        if (!s.connected) allDone = false;
+        if (idx === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      });
+      ctx.closePath(); ctx.stroke();
+
+      // Render Stars
+      stars.forEach(s => {
+        ctx.font = "24px sans-serif";
+        ctx.fillText(s.connected ? "💖" : "🌟", s.x - 12, s.y + 8);
+      });
+
+      if (allDone) {
+        ctx.font = "20px sans-serif"; ctx.fillStyle = "#ffb703";
+        ctx.fillText("✨ مجرة حب مصطفى وجنى ✨", 60, 420);
+        setTimeout(() => showModal(4), 1200);
+        return;
+      }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* Secret Key Check */
+  function checkSecretKey() {
+    let val = document.getElementById('secretKey').value.trim();
+    if (val !== "") {
+      document.getElementById('secretErr').style.display = 'none';
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+      document.getElementById('stageFinal').classList.add('active');
+    } else {
+      document.getElementById('secretErr').style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
